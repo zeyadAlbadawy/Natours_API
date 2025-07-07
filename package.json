@@ -1,0 +1,23 @@
+{
+  "name": "natours_api_final-editoin",
+  "version": "1.0.0",
+  "description": "learning nodejs",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start:dev": "nodemon sever.js",
+    "start:prod": "NODE_ENV=production nodemon server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^17.0.1",
+    "express": "^4.21.2",
+    "mongodb": "^6.17.0",
+    "mongoose": "^8.16.1",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "prettier": "^3.6.2"
+  }
+}
