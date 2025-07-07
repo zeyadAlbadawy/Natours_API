@@ -32,6 +32,7 @@ const getAllTours = async (req, res) => {
 const getTour = async (req, res) => {
   try {
     const tour = await Tour.findById(req.params.id);
+    console.log(tour.durationWeeks);
     res.status(200).json({
       status: 'Success',
       data: {
@@ -127,7 +128,46 @@ const getTourStats = async (req, res) => {
   }
 };
 
-const getMonthlyPlan = async (req, res) => {};
+const getMonthlyPlan = async (req, res) => {
+  // Separate documents by their start dates
+  // choose the passed year only and this will be done using match
+  // group by the month
+  try {
+    const year = req.params.year * 1;
+    const plan = await Tour.aggregate([
+      { $unwind: '$startDates' },
+      {
+        $match: {
+          startDates: {
+            $gte: new Date(`${year}-01-01`),
+            $lte: new Date(`${year}-12-31`),
+          },
+        },
+      },
+      {
+        $group: {
+          noOfTours: { $sum: 1 },
+          tours: { $push: '$name' },
+          _id: { $month: '$startDates' },
+        },
+      },
+      {
+        $addFields: { month: '$_id' },
+      },
+      { $project: { _id: 0 } },
+      { $sort: { noOfTours: 1 } },
+    ]);
+    res.status(200).json({
+      status: 'Success',
+      data: { plan },
+    });
+  } catch (err) {
+    res.status(404).json({
+      status: 'Fail',
+      message: err.message,
+    });
+  }
+};
 
 module.exports = {
   updateTour,
@@ -137,4 +177,5 @@ module.exports = {
   deleteTour,
   aliasTopTours,
   getTourStats,
+  getMonthlyPlan,
 };

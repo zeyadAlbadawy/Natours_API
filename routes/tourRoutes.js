@@ -2,6 +2,7 @@ const express = require('express');
 const tourRouter = express.Router();
 const tourController = require('../controller/tourController.js');
 
+tourRouter.route('/get-monthly-plan/:year').get(tourController.getMonthlyPlan);
 tourRouter.route('/getTourStats').get(tourController.getTourStats);
 tourRouter
   .route('/aliasTopTours')
