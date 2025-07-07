@@ -113,9 +113,6 @@ const getTourStats = async (req, res) => {
       {
         $sort: { noOfTours: 1 },
       },
-      // {
-      //   $match: { _id: { $ne: 'easy' } },
-      // },
     ]);
 
     res.status(200).json({
@@ -129,6 +126,8 @@ const getTourStats = async (req, res) => {
     });
   }
 };
+
+const getMonthlyPlan = async (req, res) => {};
 
 module.exports = {
   updateTour,
