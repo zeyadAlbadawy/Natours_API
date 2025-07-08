@@ -30,9 +30,10 @@ const getAllTours = async (req, res, next) => {
 const getTour = async (req, res, next) => {
   try {
     const tour = await Tour.findById(req.params.id);
-    console.log(tour);
     if (!tour)
-      return next(new AppError(`Can not find tour with id ${req.params.id}`));
+      return next(
+        new AppError(`Can not find tour with id ${req.params.id}`, 404),
+      );
     res.status(200).json({
       status: 'Success',
       data: {
@@ -71,9 +72,12 @@ const updateTour = async (req, res) => {
   }
 };
 
-const deleteTour = async (req, res) => {
+const deleteTour = async (req, res, next) => {
   try {
-    await Tour.findByIdAndDelete(req.params.id);
+    const tour = await Tour.findByIdAndDelete(req.params.id);
+    if (!tour)
+      return new AppError(`Can not find tour with id ${req.params.id}`, 404);
+
     res.status(204).json({
       status: 'Success',
       message: 'Tour deleted Successfully',
