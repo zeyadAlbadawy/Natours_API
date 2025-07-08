@@ -1,5 +1,6 @@
 const Tour = require('../models/tourModel.js');
 const APIfeatures = require('../utils/apiFeatures.js');
+const AppError = require('../utils/appError.js');
 
 const aliasTopTours = (req, res, next) => {
   req.query.limit = '5';
@@ -8,7 +9,7 @@ const aliasTopTours = (req, res, next) => {
   next();
 };
 
-const getAllTours = async (req, res) => {
+const getAllTours = async (req, res, next) => {
   try {
     const features = new APIfeatures(Tour.find(), req.query);
     features.filter().sorting().limitation().pagination();
@@ -22,17 +23,16 @@ const getAllTours = async (req, res) => {
       },
     });
   } catch (err) {
-    res.status(404).json({
-      status: 'Fail',
-      message: err.message,
-    });
+    next(err);
   }
 };
 
-const getTour = async (req, res) => {
+const getTour = async (req, res, next) => {
   try {
     const tour = await Tour.findById(req.params.id);
-    console.log(tour.durationWeeks);
+    console.log(tour);
+    if (!tour)
+      return next(new AppError(`Can not find tour with id ${req.params.id}`));
     res.status(200).json({
       status: 'Success',
       data: {
@@ -40,14 +40,11 @@ const getTour = async (req, res) => {
       },
     });
   } catch (err) {
-    res.status(400).json({
-      status: 'fail',
-      message: err,
-    });
+    next(err);
   }
 };
 
-const createNewTour = async (req, res) => {
+const createNewTour = async (req, res, next) => {
   try {
     const newTour = await Tour.create(req.body);
     res.status(201).json({
@@ -55,10 +52,7 @@ const createNewTour = async (req, res) => {
       data: { tour: newTour },
     });
   } catch (err) {
-    res.status(400).json({
-      status: 'Fail',
-      message: err,
-    });
+    next(err);
   }
 };
 
@@ -73,10 +67,7 @@ const updateTour = async (req, res) => {
       data: { tour },
     });
   } catch (err) {
-    res.status(400).json({
-      status: 'Fail',
-      message: err,
-    });
+    next(err);
   }
 };
 
@@ -88,10 +79,7 @@ const deleteTour = async (req, res) => {
       message: 'Tour deleted Successfully',
     });
   } catch (err) {
-    res.status(400).json({
-      status: 'Fail',
-      message: err,
-    });
+    next(err);
   }
 };
 
@@ -121,10 +109,7 @@ const getTourStats = async (req, res) => {
       data: { stats },
     });
   } catch (err) {
-    res.status(404).json({
-      status: 'Fail',
-      message: err.message,
-    });
+    next(err);
   }
 };
 
@@ -162,10 +147,7 @@ const getMonthlyPlan = async (req, res) => {
       data: { plan },
     });
   } catch (err) {
-    res.status(404).json({
-      status: 'Fail',
-      message: err.message,
-    });
+    next(err);
   }
 };
 
