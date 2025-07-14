@@ -3,10 +3,10 @@ const mongoose = require('mongoose');
 dotenv.config({ path: './config.env' });
 
 // UnCaught Exception Error
-process.on('uncaughtException', () => {
-  console.log('uncaught Exception');
-  process.exit(1);
-});
+// process.on('uncaughtException', () => {
+//   console.log('uncaught Exception');
+//   process.exit(1);
+// });
 
 const app = require('./app.js');
 

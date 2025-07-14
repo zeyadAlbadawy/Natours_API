@@ -13,6 +13,12 @@ const handleCastError = (err) => {
   return new appError(`Invalid ${err.path} of ${err.value}`, 400);
 };
 
+const handleJWTErrorAuth = () =>
+  new appError(`Invalid token, Please try to login again`, 401);
+
+const handleJWTExpiredAuth = () =>
+  new appError(`The Token has been expired, Please try to login again`, 401);
+
 const handleDupicateFields = (err) => {
   const value = err.errmsg.match(/(["'])(?:(?=(\\?))\2.)*?\1/)[0];
   return new appError(
@@ -46,14 +52,14 @@ const sendErrorProd = (err, res) => {
 const globalErrorHandeler = (err, req, res, next) => {
   err.status = err.status || 'error';
   err.statusCode = err.statusCode || 500;
-
   if (process.env.NODE_ENV === 'development') sendErrorDev(err, res);
   else if (process.env.NODE_ENV === 'production') {
     let error = { ...err };
     if (err.name === 'CastError') error = handleCastError(err);
     if (err.code === 11000) error = handleDupicateFields(err);
     if (err.name === 'ValidationError') error = handleValidationFields(err);
-
+    if (err.name === 'JsonWebTokenError') error = handleJWTErrorAuth(error);
+    if (err.name === 'TokenExpiredError') error = handleJWTExpiredAuth(err);
     sendErrorProd(error, res);
   }
 
