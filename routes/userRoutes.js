@@ -3,6 +3,11 @@ const userRouter = express.Router();
 const userController = require('../controller/userController.js');
 const authController = require('../controller/authController.js');
 
+userRouter.patch(
+  '/updateMyPassword',
+  authController.protect,
+  authController.updateCurrentUserPassword,
+);
 userRouter.post('/forgetPassword', authController.forgetPassword);
 userRouter.patch('/resetPassword/:token', authController.resetPassword);
 userRouter.post('/login', authController.login);

@@ -195,6 +195,40 @@ const resetPassword = async (req, res, next) => {
     next(err);
   }
 };
+
+const updateCurrentUserPassword = async (req, res, next) => {
+  try {
+    // 1) Get the user who logged in => Req.user Comes from protect middleware
+    const currentUser = await User.findById(req.user.id).select('+password');
+    const { password, passwordNew, passwordNewConfirm } = req.body;
+    // 2) check if the current user password is correct
+    if (
+      !currentUser ||
+      !(await currentUser.correctPassword(password, currentUser.password))
+    )
+      return next(
+        new appError(
+          `The Current password is not correct or the user not found. Try Login Again!`,
+          401,
+        ),
+      );
+
+    // 3) update the password
+    currentUser.password = passwordNew;
+    currentUser.passwordConfirm = passwordNewConfirm;
+    await currentUser.save();
+
+    // 4) send JWT again to the user
+    const token = assignToken(currentUser._id);
+    res.status(200).json({
+      status: 'Scuess',
+      token,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   signup,
   login,
@@ -202,4 +236,5 @@ module.exports = {
   restrictTo,
   forgetPassword,
   resetPassword,
+  updateCurrentUserPassword,
 };
