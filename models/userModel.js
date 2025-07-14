@@ -44,6 +44,11 @@ const userSchema = new mongoose.Schema({
       message: `The Passwords Doesn't Match`,
     },
   },
+  active: {
+    type: Boolean,
+    default: true,
+    select: false,
+  },
   passwordChangedAt: {
     type: Date,
   },
@@ -54,6 +59,11 @@ const userSchema = new mongoose.Schema({
   },
   passwordResetToken: String,
   passwordExpiredResetToken: Date,
+});
+
+userSchema.pre(/^find/, function (next) {
+  this.find({ active: { $ne: false } });
+  next();
 });
 
 userSchema.pre('save', function (next) {

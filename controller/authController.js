@@ -83,6 +83,7 @@ const protect = async (req, res, next) => {
     // console.log(decoded);
 
     //check if the user still exists
+
     const freshUser = await User.findById(decoded.id);
     if (!freshUser)
       return next(
