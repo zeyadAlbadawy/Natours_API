@@ -4,6 +4,25 @@ const { promisify } = require('util');
 const appError = require('../utils/appError.js');
 const sendEmail = require('../utils/mail.js');
 const crypto = require('crypto');
+
+const createSendToken = (user, statusCode, res) => {
+  const token = assignToken(user._id);
+  const cookieOptions = {
+    expires: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRESIN * 24 * 60 * 60 * 1000,
+    ),
+    httpOnly: true,
+  };
+
+  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
+  user.password = undefined;
+  res.cookie('jwt', token, cookieOptions);
+  res.status(statusCode).json({
+    status: 'Success',
+    token,
+    data: { user },
+  });
+};
 const assignToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
@@ -20,13 +39,7 @@ const signup = async (req, res, next) => {
       passwordConfirm: req.body.passwordConfirm,
     });
     // The first params of jwt.assign is the property that can be unique and travels between server and client
-    const token = assignToken(newUser._id);
-
-    res.status(201).json({
-      status: 'Success',
-      token,
-      data: { user: newUser },
-    });
+    createSendToken(newUser, 201, res);
   } catch (err) {
     next(err);
   }
@@ -48,11 +61,7 @@ const login = async (req, res, next) => {
         ),
       );
     // if everything is ok send the token
-    const token = assignToken(user._id);
-    res.status(200).json({
-      status: 'success',
-      token,
-    });
+    createSendToken(user, 200, res);
   } catch (err) {
     next(err);
   }
@@ -187,11 +196,7 @@ const resetPassword = async (req, res, next) => {
     foundUser.passwordResetToken = undefined;
     await foundUser.save();
     // Log the user in
-    const token = assignToken(foundUser._id);
-    res.status(200).json({
-      status: 'Success',
-      token,
-    });
+    createSendToken(foundUser, 200, res);
   } catch (err) {
     next(err);
   }
@@ -220,11 +225,7 @@ const updateCurrentUserPassword = async (req, res, next) => {
     await currentUser.save();
 
     // 4) send JWT again to the user
-    const token = assignToken(currentUser._id);
-    res.status(200).json({
-      status: 'Scuess',
-      token,
-    });
+    createSendToken(currentUser, 200, res);
   } catch (err) {
     next(err);
   }
