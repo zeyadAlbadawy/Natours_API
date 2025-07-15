@@ -47,8 +47,6 @@ const getTour = async (req, res, next) => {
 
 const createNewTour = async (req, res, next) => {
   try {
-    console.log('Incoming body:', req.body); // 🔍 log this
-
     const newTour = await Tour.create(req.body);
     res.status(201).json({
       status: 'Success',

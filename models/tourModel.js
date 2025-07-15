@@ -123,7 +123,11 @@ const tourSchema = new mongoose.Schema(
         day: Number,
       },
     ],
+    // guides Using Referencing will be just by making it of type Array And using middleware we will get the
+    // users associated withthis middleware and save it to the tour
+
     // This implements the child referencing which is the parent(Tours) references the Users(ids) array
+    // this can be done using pagination
     guides: [
       {
         type: mongoose.Schema.ObjectId,
