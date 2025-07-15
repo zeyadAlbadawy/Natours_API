@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
 const validator = require('validator');
+const User = require('./userModel');
 
 const tourSchema = new mongoose.Schema(
   {
@@ -71,9 +72,9 @@ const tourSchema = new mongoose.Schema(
     },
 
     images: [String],
-    creaetdAt: {
+    creatdAt: {
       type: Date,
-      default: Date.now(),
+      default: Date.now,
       select: false,
     },
     slug: String,
@@ -91,6 +92,44 @@ const tourSchema = new mongoose.Schema(
         message: 'Price discount ({VALUE}) should be less than the price',
       },
     },
+    // Embeded Document for tours locations
+    startLocation: {
+      // The Type And Coordinates used to specify this as GEO
+      type: {
+        type: String,
+        default: 'Point',
+        enum: ['Point'],
+      },
+      coordinates: {
+        type: [Number],
+        required: true,
+      },
+      address: String,
+      description: String,
+    },
+    locations: [
+      {
+        type: {
+          type: String,
+          default: 'Point',
+          enum: ['Point'],
+        },
+        coordinates: {
+          type: [Number],
+          required: true,
+        },
+        address: String,
+        description: String,
+        day: Number,
+      },
+    ],
+    // This implements the child referencing which is the parent(Tours) references the Users(ids) array
+    guides: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: 'User',
+      },
+    ],
   },
   {
     toJSON: { virtuals: true },
@@ -108,11 +147,27 @@ tourSchema.pre('save', function (next) {
   next();
 });
 
+// if i choose embeding the users inside the tour this middleware to convert guides ids to valid users
+// tourSchema.pre('save', async function (next) {
+//   const tourGuidesPromises = this.guides.map(
+//     async (id) => await User.findById(id),
+//   );
+//   this.guides = await Promise.all(tourGuidesPromises);
+//   next();
+// });
+
+// tourSchema.pre(/^find/, function (next) {
+//   this.find({ secretTour: { $ne: true } });
+//   next();
+// });
+
 tourSchema.pre(/^find/, function (next) {
-  this.find({ secretTour: { $ne: true } });
+  this.populate({
+    path: 'guides',
+    select: '-__v -passwordChangedAt',
+  });
   next();
 });
-
 tourSchema.pre('aggregate', function (next) {
   this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
   console.log(this.pipeline());

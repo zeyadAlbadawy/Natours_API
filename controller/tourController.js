@@ -47,6 +47,8 @@ const getTour = async (req, res, next) => {
 
 const createNewTour = async (req, res, next) => {
   try {
+    console.log('Incoming body:', req.body); // 🔍 log this
+
     const newTour = await Tour.create(req.body);
     res.status(201).json({
       status: 'Success',
@@ -74,10 +76,12 @@ const updateTour = async (req, res) => {
 
 const deleteTour = async (req, res, next) => {
   try {
-    const tour = await Tour.findByIdAndDelete(req.params.id);
+    const tour = await Tour.findById(req.params.id);
     if (!tour)
-      return new AppError(`Can not find tour with id ${req.params.id}`, 404);
-
+      return next(
+        new AppError(`Can not find tour with id ${req.params.id}`, 404),
+      );
+    await Tour.findByIdAndDelete(req.params.id);
     res.status(204).json({
       status: 'Success',
       message: 'Tour deleted Successfully',

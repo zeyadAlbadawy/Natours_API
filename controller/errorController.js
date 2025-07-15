@@ -62,8 +62,6 @@ const globalErrorHandeler = (err, req, res, next) => {
     if (err.name === 'TokenExpiredError') error = handleJWTExpiredAuth(err);
     sendErrorProd(error, res);
   }
-
-  next();
 };
 
 module.exports = globalErrorHandeler;
