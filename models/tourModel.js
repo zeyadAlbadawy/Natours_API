@@ -123,11 +123,22 @@ const tourSchema = new mongoose.Schema(
         day: Number,
       },
     ],
-    // guides Using Referencing will be just by making it of type Array And using middleware we will get the
+    // guides Using Embdeding will be just by making it of type Array And using middleware we will get the
     // users associated withthis middleware and save it to the tour
+    // guides: {type: Array} then use this.guides.map() and map the res of getting tour.find in the guides
+    // // if i choose embeding the users inside the tour this middleware to convert guides ids to valid users
+    // tourSchema.pre('save', async function (next) {
+    //   const tourGuidesPromises = this.guides.map(
+    //     async (id) => await User.findById(id),
+    //   );
+    //   this.guides = await Promise.all(tourGuidesPromises);
+    //   next();
+    // });
 
-    // This implements the child referencing which is the parent(Tours) references the Users(ids) array
-    // this can be done using pagination
+    // Another
+    // This implements the ***(Child Referencing)*** which is the parent(Tours) references the Users(ids) array
+    // this can be done using pagination .populate
+
     guides: [
       {
         type: mongoose.Schema.ObjectId,
@@ -145,26 +156,28 @@ tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
 });
 
+// This implements so that the tour has access to all reviews avaiable for this tour (Child Referencing)
+// so this will be an array which holds a reference to all reviews! after that use populate to complete this
+// Actions based upon find or whatever
+
+tourSchema.virtual('reviews', {
+  ref: 'Review',
+  foreignField: 'tour',
+  localField: '_id',
+});
+
 // Pre document middleware runs on .save() and on .create() only
 tourSchema.pre('save', function (next) {
   this.slug = slugify(this.name, { lower: true });
   next();
 });
 
-// if i choose embeding the users inside the tour this middleware to convert guides ids to valid users
-// tourSchema.pre('save', async function (next) {
-//   const tourGuidesPromises = this.guides.map(
-//     async (id) => await User.findById(id),
-//   );
-//   this.guides = await Promise.all(tourGuidesPromises);
-//   next();
-// });
-
 // tourSchema.pre(/^find/, function (next) {
 //   this.find({ secretTour: { $ne: true } });
 //   next();
 // });
 
+// Applies The Child Referencing will will not be saved into the data-base like embeding
 tourSchema.pre(/^find/, function (next) {
   this.populate({
     path: 'guides',
@@ -172,6 +185,7 @@ tourSchema.pre(/^find/, function (next) {
   });
   next();
 });
+
 tourSchema.pre('aggregate', function (next) {
   this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
   console.log(this.pipeline());

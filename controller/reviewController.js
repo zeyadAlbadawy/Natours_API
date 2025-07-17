@@ -16,21 +16,16 @@ const getAllReviews = async (req, res, next) => {
 
 const createReview = async (req, res, next) => {
   try {
+    const newReview = await Review.create(req.body);
+    res.status(201).json({
+      status: 'Success',
+      data: {
+        review: newReview,
+      },
+    });
   } catch (err) {
     next(err);
   }
 };
 
-const getReview = async (req, res, next) => {
-  try {
-    const review = await Review.findById(req.params.id);
-    if (!review)
-      return next(
-        new AppError(`There is no any review with the id of ${req.params.id}`),
-      );
-    res.status();
-  } catch (err) {
-    next(err);
-  }
-};
-module.exports = { getAllReviews, getReview };
+module.exports = { getAllReviews, createReview };

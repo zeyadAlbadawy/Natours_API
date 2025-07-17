@@ -18,11 +18,14 @@ const reviewSchema = new mongoose.Schema(
       default: Date.now,
     },
 
-    tourGuides: {
+    // There is not an array so that it is parent referencing which means review points to a tour and a user
+    // But the user or tour don't know the reviews associated with them!
+    // This also can be implemented using pagination
+    tour: {
       type: mongoose.Schema.ObjectId,
       ref: 'Tour',
     },
-    userGuides: {
+    user: {
       type: mongoose.Schema.ObjectId,
       ref: 'User',
     },
@@ -32,6 +35,17 @@ const reviewSchema = new mongoose.Schema(
     toObject: { virtuals: true },
   },
 );
+
+reviewSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: 'tour',
+    select: 'name',
+  }).populate({
+    path: 'user',
+    select: 'name photo',
+  });
+  next();
+});
 
 const Review = mongoose.model('Review', reviewSchema);
 module.exports = Review;

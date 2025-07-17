@@ -12,7 +12,7 @@ const app = express();
 
 const tourRouter = require('./routes/tourRoutes.js');
 const userRouter = require(`./routes/userRoutes.js`);
-
+const reviewRouter = require('./routes/reviewRouter.js');
 // Date Sanitization From NoSql Attacks
 app.use(mongoSanitize());
 // app.use(xss());
@@ -55,7 +55,7 @@ if (process.env.NODE_ENV === 'development') app.use(morgan('dev'));
 // Handelers
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
-
+app.use('/api/v1/reviews', reviewRouter);
 // If the router didn't catched from the above routers then it will enter here!
 app.all('*', (req, res, next) => {
   next(new AppError(`Can not find ${req.originalUrl}`, 404));

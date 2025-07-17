@@ -123,7 +123,10 @@ const restrictTo = (...roles) => {
     console.log(req.user.role);
     if (!roles.includes(req.user.role))
       return next(
-        new appError(`You Don't have permission to delete a tour`, 403),
+        new appError(
+          `As ${req.user.role} Don't have permission to do this action`,
+          403,
+        ),
       );
     next();
   };
