@@ -1,5 +1,6 @@
 const User = require('../models/userModel.js');
 const appError = require('../utils/appError.js');
+const handler = require('./handlerFactory.js');
 
 const filterObj = (obj, ...allowedFields) => {
   const res = {};
@@ -9,18 +10,6 @@ const filterObj = (obj, ...allowedFields) => {
     }
   });
   return res;
-};
-
-const getAllUsers = async (req, res, next) => {
-  try {
-    const users = await User.find({});
-    res.status(200).json({
-      status: 'Success',
-      data: { users },
-    });
-  } catch (err) {
-    next(err);
-  }
 };
 
 const updateMe = async (req, res, next) => {
@@ -63,33 +52,11 @@ const deleteMe = async (req, res, next) => {
     next(err);
   }
 };
-const createNewUser = (req, res) => {
-  res.status(500).json({
-    status: 'err',
-    message: 'This Route Has not been implemented yet!',
-  });
-};
-
-const getUser = (req, res) => {
-  res.status(500).json({
-    status: 'err',
-    message: 'This Route Has not been implemented yet!',
-  });
-};
-
-const updateUser = (req, res) => {
-  res.status(500).json({
-    status: 'err',
-    message: 'This Route Has not been implemented yet!',
-  });
-};
-
-const deleteUser = async (req, res, next) => {
-  res.status(500).json({
-    status: 'err',
-    message: 'This Route Has not been implemented yet!',
-  });
-};
+const getAllUsers = handler.getAll(User);
+const getUser = handler.getOne(User);
+const updateUser = handler.updateOne(User);
+const createNewUser = handler.createOne(User);
+const deleteUser = handler.deleteOne(User);
 
 module.exports = {
   updateUser,
