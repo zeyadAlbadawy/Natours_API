@@ -66,21 +66,21 @@ userSchema.pre(/^find/, function (next) {
   next();
 });
 
-userSchema.pre('save', function (next) {
-  if (!this.isModified('password') || this.isNew) return next();
-  this.passwordChangedAt = Date.now();
-  next();
-});
+// userSchema.pre('save', function (next) {
+//   if (!this.isModified('password') || this.isNew) return next();
+//   this.passwordChangedAt = Date.now();
+//   next();
+// });
 
-userSchema.pre('save', async function (next) {
-  // If the password is not modifies then skip
-  if (!this.isModified('password')) return next();
-  // Other wise encrypt the password and store it
-  this.password = await bcrypt.hash(this.password, 12);
-  this.passwordChangedAt = Date.now() - 1000;
-  this.passwordConfirm = undefined;
-  next();
-});
+// userSchema.pre('save', async function (next) {
+//   // If the password is not modifies then skip
+//   if (!this.isModified('password')) return next();
+//   // Other wise encrypt the password and store it
+//   this.password = await bcrypt.hash(this.password, 12);
+//   this.passwordChangedAt = Date.now() - 1000;
+//   this.passwordConfirm = undefined;
+//   next();
+// });
 
 userSchema.methods.correctPassword = function (
   enteredPassword,

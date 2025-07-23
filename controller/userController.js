@@ -52,6 +52,10 @@ const deleteMe = async (req, res, next) => {
     next(err);
   }
 };
+const getMe = (req, res, next) => {
+  req.params.id = req.user.id;
+  next();
+};
 const getAllUsers = handler.getAll(User);
 const getUser = handler.getOne(User);
 const updateUser = handler.updateOne(User);
@@ -66,4 +70,5 @@ module.exports = {
   deleteUser,
   updateMe,
   deleteMe,
+  getMe,
 };

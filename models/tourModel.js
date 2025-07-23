@@ -22,6 +22,8 @@ const tourSchema = new mongoose.Schema(
       default: 4.5,
       min: [1, 'Rating must be above 1.0'],
       max: [5, 'Rating must be bellow 5.0'],
+      set: (val) => Math.round(val * 10) / 10,
+      // The Set funciton will be run whenever there will be a new value
     },
 
     ratingsQuantity: {
@@ -177,6 +179,9 @@ tourSchema.pre('save', function (next) {
 //   next();
 // });
 
+tourSchema.index({ price: 1, ratingsAverage: -1 });
+tourSchema.index({ slug: 1 });
+tourSchema.index({ startLocation: '2dsphere' });
 // Applies The Child Referencing will will not be saved into the data-base like embeding
 tourSchema.pre(/^find/, function (next) {
   this.populate({
@@ -186,11 +191,11 @@ tourSchema.pre(/^find/, function (next) {
   next();
 });
 
-tourSchema.pre('aggregate', function (next) {
-  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
-  console.log(this.pipeline());
-  next();
-});
+// tourSchema.pre('aggregate', function (next) {
+//   this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
+//   console.log(this.pipeline());
+//   next();
+// });
 
 // tourSchema.post('save', function (doc, next) {
 //   console.log(doc);

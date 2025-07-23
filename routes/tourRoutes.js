@@ -3,7 +3,20 @@ const tourRouter = express.Router();
 const tourController = require('../controller/tourController.js');
 const authController = require('../controller/authController.js');
 const reviewRouter = require('../routes/reviewRouter.js');
-tourRouter.route('/get-monthly-plan/:year').get(tourController.getMonthlyPlan);
+
+tourRouter
+  .route('/tours-within/:distance/center/:latlng/unit/:unit')
+  .get(tourController.getToursWithin);
+tourRouter
+  .route('/distances/:latlng/unit/:unit')
+  .get(tourController.getDistances);
+tourRouter
+  .route('/get-monthly-plan/:year')
+  .get(
+    authController.protect,
+    authController.restrictTo('admin', 'lead-guide', 'guide'),
+    tourController.getMonthlyPlan,
+  );
 tourRouter.route('/getTourStats').get(tourController.getTourStats);
 
 // tourRouter
@@ -24,12 +37,20 @@ tourRouter
 tourRouter
   .route('/')
   .get(tourController.getAllTours)
-  .post(tourController.createNewTour);
+  .post(
+    authController.protect,
+    authController.restrictTo('admin', 'lead-guide'),
+    tourController.createNewTour,
+  );
 
 tourRouter
   .route('/:id')
   .get(tourController.getTour)
-  .patch(tourController.updateTour)
+  .patch(
+    authController.protect,
+    authController.restrictTo('admin', 'lead-guide'),
+    tourController.updateTour,
+  )
   .delete(
     authController.protect,
     authController.restrictTo('admin', 'lead-guide'),
