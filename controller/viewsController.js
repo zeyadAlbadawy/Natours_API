@@ -13,7 +13,7 @@ const getTour = async (req, res, next) => {
       path: 'reviews',
       fields: 'review rating user',
     });
-    res.status(200).render('tour', { title: 'The First Hiker', tour });
+    res.status(200).render('tour', { title: `${tour.name} tour`, tour });
   } catch (err) {
     next(err);
   }

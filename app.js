@@ -39,7 +39,7 @@ app.use(
 );
 
 // Set Security Header
-app.use(helmet());
+// app.use(helmet());
 // This will allow 100 requests per one hour
 const limiter = rateLimit({
   max: 100,
