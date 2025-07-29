@@ -14,7 +14,7 @@ const app = express();
 const tourRouter = require('./routes/tourRoutes.js');
 const userRouter = require(`./routes/userRoutes.js`);
 const reviewRouter = require('./routes/reviewRouter.js');
-
+const viewsRouter = require('./routes/viewsRouter.js');
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -58,13 +58,7 @@ app.use((req, res, next) => {
 
 if (process.env.NODE_ENV === 'development') app.use(morgan('dev'));
 
-// Handelers
-app.get('/', (req, res) =>
-  res.status(200).render('base', {
-    tour: 'The Forest Hiker',
-    user: 'Zeyad Albadawy',
-  }),
-);
+app.use('/', viewsRouter);
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
