@@ -1,9 +1,16 @@
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
-import { loginUser } from './login';
+import { loginUser, logout } from './login';
 import { displayMap } from './leaflet';
 
 const mapSelect = document.getElementById('map');
+const logOutBtn = document.querySelector('.nav__el--logout');
+if (logOutBtn) {
+  logOutBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    logout();
+  });
+}
 if (mapSelect) {
   const locations = JSON.parse(mapSelect.dataset.locations);
   displayMap(locations);

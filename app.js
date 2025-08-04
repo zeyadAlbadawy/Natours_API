@@ -60,6 +60,12 @@ app.use((req, res, next) => {
   next();
 });
 
+// app.use((req, res, next) => {
+//   const fullUrl = `${req.protocol}://${req.get('host')}${req.originalUrl}`;
+//   console.log(fullUrl);
+//   next();
+// });
+
 if (process.env.NODE_ENV === 'development') app.use(morgan('dev'));
 
 app.use('/', viewsRouter);

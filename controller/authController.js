@@ -152,7 +152,7 @@ const isLoggedIn = async (req, res, next) => {
     }
     next();
   } catch (err) {
-    next(err);
+    return next();
   }
 };
 

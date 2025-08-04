@@ -25953,6 +25953,7 @@ var logout = exports.logout = /*#__PURE__*/function () {
       while (1) switch (_context.p = _context.n) {
         case 0:
           _context.p = 0;
+          console.log('swhu');
           _context.n = 1;
           return _axios.default.get('http://127.0.0.1:3000/api/v1/users/logout');
         case 1:
@@ -25966,6 +25967,7 @@ var logout = exports.logout = /*#__PURE__*/function () {
         case 2:
           _context.p = 2;
           _t = _context.v;
+          console.log(_t);
           (0, _alerts.showAlert)('error', 'Can not log out user');
         case 3:
           return _context.a(2);
@@ -40625,6 +40627,13 @@ require("regenerator-runtime/runtime");
 var _login = require("./login");
 var _leaflet = require("./leaflet");
 var mapSelect = document.getElementById('map');
+var logOutBtn = document.querySelector('.nav__el--logout');
+if (logOutBtn) {
+  logOutBtn.addEventListener('click', function (e) {
+    e.preventDefault();
+    (0, _login.logout)();
+  });
+}
 if (mapSelect) {
   var locations = JSON.parse(mapSelect.dataset.locations);
   (0, _leaflet.displayMap)(locations);
@@ -40664,7 +40673,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "46921" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "20269" + '/');
   ws.onmessage = function (event) {
     checkedAssets = {};
     assetsToAccept = [];
