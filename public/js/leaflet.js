@@ -1,8 +1,7 @@
-document.addEventListener('DOMContentLoaded', function () {
-  const locations = JSON.parse(
-    document.getElementById('map').dataset.locations,
-  );
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 
+export const displayMap = (locations) => {
   const map = L.map('map', { zoomControl: false });
 
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -11,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }).addTo(map);
 
   const points = [];
-  const markers = []; //  store marker objects
+  const markers = [];
 
   locations.forEach((loc) => {
     const coords = [loc.coordinates[1], loc.coordinates[0]];
@@ -29,10 +28,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
   const bounds = L.latLngBounds(points).pad(0.4);
   map.fitBounds(bounds);
-
-  // 👉 Open popups AFTER map has fit bounds
   markers.forEach((marker) => marker.openPopup());
-
-  // Optional: Enable scroll zoom if desired
   map.scrollWheelZoom.disable();
-});
+};

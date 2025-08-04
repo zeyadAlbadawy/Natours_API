@@ -28,6 +28,15 @@ const assignToken = (id) => {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
 };
+
+const logout = (req, res) => {
+  res.cookie('jwt', 'loggedOutUser', {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true,
+  });
+  res.status(200).json({ status: 'success' });
+};
+
 const signup = async (req, res, next) => {
   try {
     // Once we create new user or the user sign up the user must be automatically logged in
@@ -67,15 +76,17 @@ const login = async (req, res, next) => {
   }
 };
 
+// For the protected Route
+// 1 ) in the login or sign up, we create jwt and send it via respose to the Client
+// 2 ) when we try to access any protected Route, we took this JWT token and pass it to the protect handler middleware
+//     Throught Authorized Bearer Token Header
+// 3 ) Protect Middleware checks if the authorized token exists then it will take it from the header.
+// 4 ) Using jwt.verify and passing the secret key to it, will leades to checking the token verification based upon the security key!
+//     If not correct it will through an error which will be handled in the global handler middle-ware
+// 5 ) after that we still need to check if the user still exists based upon the id stored in JWT Token!
+// 6 ) Check if the password has been changed after the token has been issued if so, return error to login again with new JWT!
+
 const protect = async (req, res, next) => {
-  // 1 ) in the login or sign up, we create jwt and send it via respose to the Client
-  // 2 ) when we try to access any protected Route, we took this JWT token and pass it to the protect handler middleware
-  //     Throught Authorized Bearer Token Header
-  // 3 ) Protect Middleware checks if the authorized token exists then it will take it from the header.
-  // 4 ) Using jwt.verify and passing the secret key to it, will leades to checking the token verification based upon the security key!
-  //     If not correct it will through an error which will be handled in the global handler middle-ware
-  // 5 ) after that we still need to check if the user still exists based upon the id stored in JWT Token!
-  // 6 ) Check if the password has been changed after the token has been issued if so, return error to login again with new JWT!
   try {
     // Get The Token And check if it is there
     let token;
@@ -84,6 +95,8 @@ const protect = async (req, res, next) => {
       req.headers.authorization.startsWith('Bearer')
     ) {
       token = req.headers.authorization.split(' ')[1];
+    } else if (req.cookies.jwt) {
+      token = req.cookies.jwt;
     }
     if (!token) return next(new appError(`You are not logged in, Try Again! `));
 
@@ -112,6 +125,31 @@ const protect = async (req, res, next) => {
       );
     }
     req.user = freshUser;
+    next();
+  } catch (err) {
+    next(err);
+  }
+};
+
+const isLoggedIn = async (req, res, next) => {
+  try {
+    // Get The Token And check if it is there
+    if (req.cookies.jwt) {
+      // Vertify if the token is valid
+      const decoded = await promisify(jwt.verify)(
+        req.cookies.jwt,
+        process.env.JWT_SECRET,
+      );
+
+      // Check if the user is exist
+
+      const freshUser = await User.findById(decoded.id);
+      if (!freshUser) return next();
+
+      // Check if the user change password after jwt has been issued
+      if (freshUser.isPasswordChanged(decoded.iat)) return next();
+      res.locals.user = freshUser;
+    }
     next();
   } catch (err) {
     next(err);
@@ -237,9 +275,11 @@ const updateCurrentUserPassword = async (req, res, next) => {
 module.exports = {
   signup,
   login,
+  logout,
   protect,
   restrictTo,
   forgetPassword,
   resetPassword,
   updateCurrentUserPassword,
+  isLoggedIn,
 };

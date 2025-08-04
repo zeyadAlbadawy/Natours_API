@@ -4,6 +4,7 @@ const userController = require('../controller/userController.js');
 const authController = require('../controller/authController.js');
 
 userRouter.post('/login', authController.login);
+userRouter.get('/logout', authController.logout);
 userRouter.post('/signup', authController.signup);
 
 // Protect All Routes

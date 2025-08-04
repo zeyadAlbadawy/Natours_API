@@ -1,5 +1,6 @@
 const express = require('express');
 const morgan = require('morgan');
+var cookieParser = require('cookie-parser');
 const helmet = require('helmet');
 const hpp = require('hpp');
 const path = require('path');
@@ -46,6 +47,8 @@ const limiter = rateLimit({
   windowMs: 60 * 60 * 1000,
   message: 'Too Many Requests From This API. Try Again Within An Hour!',
 });
+app.use(cookieParser());
+
 // Middle-ware
 app.use('/api', limiter);
 app.use(express.static('public'));
@@ -53,6 +56,7 @@ app.use(express.json());
 
 app.use((req, res, next) => {
   req.reqTime = new Date().toISOString();
+  console.log(req.cookies);
   next();
 });
 

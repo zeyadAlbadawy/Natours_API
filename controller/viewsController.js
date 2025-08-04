@@ -1,6 +1,5 @@
 const AppError = require('../utils/appError.js');
 const Tour = require('../models/tourModel.js');
-
 const getOverview = async (req, res, next) => {
   const tours = await Tour.find();
   res.status(200).render('overview', { title: 'All Tours', tours });
@@ -19,4 +18,11 @@ const getTour = async (req, res, next) => {
   }
 };
 
-module.exports = { getOverview, getTour };
+const getLoginForm = async (req, res, next) => {
+  try {
+    res.status(200).render('login', { title: 'Log into your account' });
+  } catch (err) {
+    next(err);
+  }
+};
+module.exports = { getOverview, getTour, getLoginForm };
