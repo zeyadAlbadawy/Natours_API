@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const multer = require('multer');
 const crypto = require('crypto');
 const { default: isEmail } = require('validator/lib/isEmail');
 const { ServerMonitoringMode } = require('mongodb');
@@ -24,11 +25,12 @@ const userSchema = new mongoose.Schema({
 
   photo: {
     type: String,
+    default: 'default.jpg',
   },
 
   password: {
     type: String,
-    required: ['True', 'User Password is required'],
+    required: [true, 'User Password is required'],
     minLength: [8, 'The Password should be greater than 8'],
     select: false,
   },
@@ -72,15 +74,15 @@ userSchema.pre(/^find/, function (next) {
 //   next();
 // });
 
-// userSchema.pre('save', async function (next) {
-//   // If the password is not modifies then skip
-//   if (!this.isModified('password')) return next();
-//   // Other wise encrypt the password and store it
-//   this.password = await bcrypt.hash(this.password, 12);
-//   this.passwordChangedAt = Date.now() - 1000;
-//   this.passwordConfirm = undefined;
-//   next();
-// });
+userSchema.pre('save', async function (next) {
+  // If the password is not modifies then skip
+  if (!this.isModified('password')) return next();
+  // Other wise encrypt the password and store it
+  this.password = await bcrypt.hash(this.password, 12);
+  this.passwordChangedAt = Date.now() - 1000;
+  this.passwordConfirm = undefined;
+  next();
+});
 
 userSchema.methods.correctPassword = function (
   enteredPassword,

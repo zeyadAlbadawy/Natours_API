@@ -1,6 +1,34 @@
 const User = require('../models/userModel.js');
+const AppError = require('../utils/appError.js');
 const appError = require('../utils/appError.js');
 const handler = require('./handlerFactory.js');
+const multer = require('multer');
+
+const multerStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'public/img/users');
+  },
+  filename: (req, file, cb) => {
+    const ext = file.mimetype.split('/')[1];
+    // The first arg is no error
+    cb(null, `user-${req.user.id}-${Date.now()}.${ext}`);
+  },
+});
+
+const multerFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith('image')) {
+    cb(null, true);
+  } else {
+    cb(new AppError('Not an image, please upload only images', 400), false);
+  }
+};
+
+const upload = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter,
+});
+
+const multerSetDestination = upload.single('photo');
 
 const filterObj = (obj, ...allowedFields) => {
   const res = {};
@@ -15,6 +43,7 @@ const filterObj = (obj, ...allowedFields) => {
 const updateMe = async (req, res, next) => {
   try {
     // Create error if user posted password!
+    console.log(req.file);
     if (req.body.password || req.body.passwordConfirm)
       return next(
         new appError(
@@ -24,6 +53,8 @@ const updateMe = async (req, res, next) => {
       );
 
     const filterdObject = filterObj(req.body, 'name', 'email');
+    if (req.file) filterdObject.name = req.file.filename;
+
     const updatedUser = await User.findByIdAndUpdate(
       req.user.id,
       filterdObject,
@@ -66,6 +97,7 @@ module.exports = {
   updateUser,
   getUser,
   createNewUser,
+  multerSetDestination,
   getAllUsers,
   deleteUser,
   updateMe,

@@ -14,7 +14,11 @@ userRouter.route('/getMe').get(userController.getMe, userController.getUser);
 userRouter.post('/forgetPassword', authController.forgetPassword);
 userRouter.patch('/resetPassword/:token', authController.resetPassword);
 userRouter.delete('/deleteMe', userController.deleteMe);
-userRouter.patch('/updateMe', userController.updateMe);
+userRouter.patch(
+  '/updateMe',
+  userController.multerSetDestination,
+  userController.updateMe,
+);
 
 userRouter.use(authController.restrictTo('admin'));
 userRouter

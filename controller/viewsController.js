@@ -12,6 +12,8 @@ const getTour = async (req, res, next) => {
       path: 'reviews',
       fields: 'review rating user',
     });
+    if (!tour)
+      return next(new AppError(`Can not find tour with this name!`, 404));
     res.status(200).render('tour', { title: `${tour.name} tour`, tour });
   } catch (err) {
     next(err);

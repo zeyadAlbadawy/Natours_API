@@ -1,12 +1,19 @@
 const appError = require('../utils/appError.js');
 
-const sendErrorDev = (err, res) => {
-  res.status(err.statusCode).json({
-    status: err.status,
-    message: err.message,
-    error: err,
-    stack: err.stack,
-  });
+const sendErrorDev = (err, req, res) => {
+  if (req.originalUrl.startsWith('/api')) {
+    res.status(err.statusCode).json({
+      status: err.status,
+      message: err.message,
+      error: err,
+      stack: err.stack,
+    });
+  } else {
+    // Render error page
+    res
+      .status(err.statusCode)
+      .render('error', { title: 'Something went wrong', msg: err.message });
+  }
 };
 
 const handleCastError = (err) => {
@@ -34,33 +41,49 @@ const handleValidationFields = (err) => {
   return new appError(`${message}`, 400);
 };
 
-const sendErrorProd = (err, res) => {
+const sendErrorProd = (err, req, res) => {
   // Operational error means the error we created ourselves that didn't match a certain criteria
-  if (err.isOperational) {
-    res.status(err.statusCode).json({
-      status: err.status,
-      message: err.message,
-    });
+  // A) APIS
+  if (req.originalUrl.startsWith('/api')) {
+    if (err.isOperational) {
+      return res.status(err.statusCode).json({
+        status: err.status,
+        message: err.message,
+      });
+    }
     // Otherwise => unexpected errors don't leak the inforamtion
-  } else {
-    res.status(500).json({
+    return res.status(500).json({
       status: 'Error',
       message: 'Something went wrong!',
     });
   }
+
+  // For RENDERING
+  if (err.isOperational) {
+    return res
+      .status(err.statusCode)
+      .render('error', { title: 'Something went wrong', msg: err.message });
+  }
+
+  // Dont leak info if is is not operational
+  return res.status(err.statusCode).render('error', {
+    title: 'Something went wrong',
+    msg: 'try again later!',
+  });
 };
 const globalErrorHandeler = (err, req, res, next) => {
   err.status = err.status || 'error';
   err.statusCode = err.statusCode || 500;
-  if (process.env.NODE_ENV === 'development') sendErrorDev(err, res);
+  if (process.env.NODE_ENV === 'development') sendErrorDev(err, req, res);
   else if (process.env.NODE_ENV === 'production') {
     let error = { ...err };
+    error.message = err.message;
     if (err.name === 'CastError') error = handleCastError(err);
     if (err.code === 11000) error = handleDupicateFields(err);
     if (err.name === 'ValidationError') error = handleValidationFields(err);
     if (err.name === 'JsonWebTokenError') error = handleJWTErrorAuth(error);
     if (err.name === 'TokenExpiredError') error = handleJWTExpiredAuth(err);
-    sendErrorProd(error, res);
+    sendErrorProd(error, req, res);
   }
 };
 
