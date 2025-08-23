@@ -3,15 +3,12 @@ import axios from 'axios';
 
 export const logout = async () => {
   try {
-    console.log('swhu');
-
     const res = await axios.get('http://127.0.0.1:3000/api/v1/users/logout');
     if (res.data.status === 'success') {
       location.reload(true);
       showAlert('success', 'Logged Out Successful');
     }
   } catch (err) {
-    console.log(err);
     showAlert('error', 'Can not log out user');
   }
 };

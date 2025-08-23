@@ -48,6 +48,7 @@ const limiter = rateLimit({
   message: 'Too Many Requests From This API. Try Again Within An Hour!',
 });
 app.use(cookieParser());
+app.use(express.urlencoded({ extended: true }));
 
 // Middle-ware
 app.use('/api', limiter);

@@ -1,5 +1,6 @@
 const AppError = require('../utils/appError.js');
 const Tour = require('../models/tourModel.js');
+const User = require('../models/userModel.js');
 const getOverview = async (req, res, next) => {
   const tours = await Tour.find();
   res.status(200).render('overview', { title: 'All Tours', tours });
@@ -27,4 +28,40 @@ const getLoginForm = async (req, res, next) => {
     next(err);
   }
 };
-module.exports = { getOverview, getTour, getLoginForm };
+
+const getAccount = async (req, res, next) => {
+  try {
+    res.status(200).render('account', { title: 'Your account' });
+  } catch (err) {
+    next(err);
+  }
+};
+
+const updateUserData = async (req, res, next) => {
+  try {
+    const foundUser = await User.findByIdAndUpdate(
+      req.user.id,
+      {
+        name: req.body.name,
+        email: req.body.email,
+      },
+      {
+        new: true,
+        runValidators: true,
+      },
+    );
+    res.status(200).render('account', {
+      title: 'You Account',
+      user: foundUser,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+module.exports = {
+  getOverview,
+  getTour,
+  getLoginForm,
+  getAccount,
+  updateUserData,
+};

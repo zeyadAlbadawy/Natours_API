@@ -102,7 +102,6 @@ const protect = async (req, res, next) => {
 
     // verification token
     const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
-    // console.log(decoded);
 
     //check if the user still exists
 
@@ -125,6 +124,8 @@ const protect = async (req, res, next) => {
       );
     }
     req.user = freshUser;
+    res.locals.user = freshUser;
+
     next();
   } catch (err) {
     next(err);
@@ -150,7 +151,7 @@ const isLoggedIn = async (req, res, next) => {
       if (freshUser.isPasswordChanged(decoded.iat)) return next();
       res.locals.user = freshUser;
     }
-    next();
+    return next();
   } catch (err) {
     return next();
   }
@@ -158,7 +159,6 @@ const isLoggedIn = async (req, res, next) => {
 
 const restrictTo = (...roles) => {
   return (req, res, next) => {
-    console.log(req.user.role);
     if (!roles.includes(req.user.role))
       return next(
         new appError(
