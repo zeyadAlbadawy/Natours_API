@@ -57,7 +57,6 @@ app.use(express.json());
 
 app.use((req, res, next) => {
   req.reqTime = new Date().toISOString();
-  console.log(req.cookies);
   next();
 });
 

@@ -48,3 +48,6 @@ pids/
 *.pid
 *.seed
 *.pid.lock
+
+
+public/img

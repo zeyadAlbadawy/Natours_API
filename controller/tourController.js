@@ -1,6 +1,69 @@
 const Tour = require('../models/tourModel.js');
 const AppError = require('../utils/appError.js');
 const factory = require('./handlerFactory.js');
+const multer = require('multer');
+const sharp = require('sharp');
+
+// Images And Covers Uploads
+
+const multerStorage = multer.memoryStorage();
+
+const multerFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith('image')) {
+    cb(null, true);
+  } else {
+    cb(new AppError('Not an image, please upload only images', 400), false);
+  }
+};
+
+const upload = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter,
+});
+
+// Middleware for upload multiple imgs
+const uploadTourImgs = upload.fields([
+  {
+    name: 'imageCover',
+    maxCount: 1,
+  },
+  {
+    name: 'images',
+    maxCount: 3,
+  },
+]);
+
+const resizeTourImages = async (req, res, next) => {
+  try {
+    if (!req.files.imageCover || !req.files.images) return next();
+    // console.log(req.files);
+
+    // Process The Cover Image
+    req.body.imageCover = `tour-${req.params.id}-${Date.now()}-cover.jpeg`;
+    await sharp(req.files.imageCover[0].buffer)
+      .resize(2000, 1333)
+      .toFormat('jpeg')
+      .jpeg({ quality: 90 })
+      .toFile(`public/img/tours/${req.body.imageCover}`); //save the image after getting it from buffer
+
+    // Process The Other images
+    req.body.images = [];
+    await Promise.all(
+      req.files.images.map(async (file, i) => {
+        const imageName = `tour-imgs-${req.params.id}-${Date.now()}-${i + 1}.jpeg`;
+        await sharp(file.buffer)
+          .resize(2000, 1333)
+          .toFormat('jpeg')
+          .jpeg({ quality: 90 })
+          .toFile(`public/img/tours/${imageName}`); //save the image after getting it from buffer
+        req.body.images.push(imageName);
+      }),
+    );
+    next();
+  } catch (err) {
+    next(err);
+  }
+};
 const aliasTopTours = (req, res, next) => {
   req.query.limit = '5';
   req.query.sort = '-ratingsAverage,price';
@@ -243,5 +306,7 @@ module.exports = {
   aliasTopTours,
   getTourStats,
   getMonthlyPlan,
+  uploadTourImgs,
   getToursWithin,
+  resizeTourImages,
 };

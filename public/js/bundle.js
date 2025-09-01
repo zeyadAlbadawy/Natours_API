@@ -40633,17 +40633,14 @@ function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.
 function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
 // update data function
 var updateData = exports.updateData = /*#__PURE__*/function () {
-  var _ref = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee(name, email) {
+  var _ref = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee(data) {
     var res, _t;
     return _regenerator().w(function (_context) {
       while (1) switch (_context.p = _context.n) {
         case 0:
           _context.p = 0;
           _context.n = 1;
-          return _axios.default.patch('http://127.0.0.1:3000/api/v1/users/updateMe', {
-            email: email,
-            name: name
-          });
+          return _axios.default.patch('http://127.0.0.1:3000/api/v1/users/updateMe', data);
         case 1:
           res = _context.v;
           if (res.data.status === 'Success') (0, _alerts.showAlert)('success', 'Updated Data Successful');
@@ -40658,7 +40655,7 @@ var updateData = exports.updateData = /*#__PURE__*/function () {
       }
     }, _callee, null, [[0, 2]]);
   }));
-  return function updateData(_x, _x2) {
+  return function updateData(_x) {
     return _ref.apply(this, arguments);
   };
 }();
@@ -40689,7 +40686,7 @@ var updatePassword = exports.updatePassword = /*#__PURE__*/function () {
       }
     }, _callee2, null, [[0, 2]]);
   }));
-  return function updatePassword(_x3, _x4, _x5) {
+  return function updatePassword(_x2, _x3, _x4) {
     return _ref2.apply(this, arguments);
   };
 }();
@@ -40735,15 +40732,17 @@ if (updateDataForm) {
   updateDataForm.addEventListener('submit', /*#__PURE__*/function () {
     var _ref = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee(e) {
       var _document$getElementB3, _document$getElementB4;
-      var email, name;
+      var form;
       return _regenerator().w(function (_context) {
         while (1) switch (_context.n) {
           case 0:
             e.preventDefault();
-            email = (_document$getElementB3 = document.getElementById('email')) === null || _document$getElementB3 === void 0 ? void 0 : _document$getElementB3.value;
-            name = (_document$getElementB4 = document.getElementById('name')) === null || _document$getElementB4 === void 0 ? void 0 : _document$getElementB4.value;
+            form = new FormData();
+            form.append('name', (_document$getElementB3 = document.getElementById('name')) === null || _document$getElementB3 === void 0 ? void 0 : _document$getElementB3.value);
+            form.append('email', (_document$getElementB4 = document.getElementById('email')) === null || _document$getElementB4 === void 0 ? void 0 : _document$getElementB4.value);
+            form.append('photo', document.getElementById('photo').files[0]); // select the new image from the input form
             _context.n = 1;
-            return (0, _updateSettings.updateData)(name, email);
+            return (0, _updateSettings.updateData)(form);
           case 1:
             return _context.a(2);
         }
@@ -40808,7 +40807,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "18688" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "3986" + '/');
   ws.onmessage = function (event) {
     checkedAssets = {};
     assetsToAccept = [];

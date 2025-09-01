@@ -3,17 +3,20 @@ const AppError = require('../utils/appError.js');
 const appError = require('../utils/appError.js');
 const handler = require('./handlerFactory.js');
 const multer = require('multer');
+const sharp = require('sharp');
+// const multerStorage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, 'public/img/users');
+//   },
+//   filename: (req, file, cb) => {
+//     const ext = file.mimetype.split('/')[1];
+//     // The first arg is no error
+//     cb(null, `user-${req.user.id}-${Date.now()}.${ext}`);
+//   },
+// });
 
-const multerStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'public/img/users');
-  },
-  filename: (req, file, cb) => {
-    const ext = file.mimetype.split('/')[1];
-    // The first arg is no error
-    cb(null, `user-${req.user.id}-${Date.now()}.${ext}`);
-  },
-});
+// The image will be stored as buffer before presisting to DB
+const multerStorage = multer.memoryStorage();
 
 const multerFilter = (req, file, cb) => {
   if (file.mimetype.startsWith('image')) {
@@ -28,7 +31,25 @@ const upload = multer({
   fileFilter: multerFilter,
 });
 
+// Middleware before setting an image!
 const multerSetDestination = upload.single('photo');
+
+// Will Acess req.file form  the multerSetDestination Middleware
+const resizeUserPhoto = async (req, res, next) => {
+  try {
+    if (!req.file) return next();
+    req.file.filename = `user - ${req.user.id} -${Date.now()}.jpeg`; // filename is gone throught memorystorage
+    // filename is only exists throught actual saving to disk
+    await sharp(req.file.buffer)
+      .resize(500, 500)
+      .toFormat('jpeg')
+      .jpeg({ quality: 90 })
+      .toFile(`public/img/users/${req.file.filename}`); //save the image after getting it from buffer
+    next();
+  } catch (err) {
+    next(err);
+  }
+};
 
 const filterObj = (obj, ...allowedFields) => {
   const res = {};
@@ -43,7 +64,6 @@ const filterObj = (obj, ...allowedFields) => {
 const updateMe = async (req, res, next) => {
   try {
     // Create error if user posted password!
-    console.log(req.file);
     if (req.body.password || req.body.passwordConfirm)
       return next(
         new appError(
@@ -53,8 +73,7 @@ const updateMe = async (req, res, next) => {
       );
 
     const filterdObject = filterObj(req.body, 'name', 'email');
-    if (req.file) filterdObject.name = req.file.filename;
-
+    if (req.file) filterdObject.photo = req.file.filename;
     const updatedUser = await User.findByIdAndUpdate(
       req.user.id,
       filterdObject,
@@ -103,4 +122,5 @@ module.exports = {
   updateMe,
   deleteMe,
   getMe,
+  resizeUserPhoto,
 };

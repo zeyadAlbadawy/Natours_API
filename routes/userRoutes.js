@@ -17,6 +17,7 @@ userRouter.delete('/deleteMe', userController.deleteMe);
 userRouter.patch(
   '/updateMe',
   userController.multerSetDestination,
+  userController.resizeUserPhoto,
   userController.updateMe,
 );
 
