@@ -2,7 +2,7 @@ const User = require('../models/userModel.js');
 const jwt = require('jsonwebtoken');
 const { promisify } = require('util');
 const appError = require('../utils/appError.js');
-const sendEmail = require('../utils/mail.js');
+const Email = require('../utils/mail.js');
 const crypto = require('crypto');
 
 const createSendToken = (user, statusCode, res) => {
@@ -47,9 +47,14 @@ const signup = async (req, res, next) => {
       password: req.body.password,
       passwordConfirm: req.body.passwordConfirm,
     });
+
+    const url = `${req.protocol}://${req.get('host')}/me`;
+    await new Email(newUser, url).sendWelcome();
     // The first params of jwt.assign is the property that can be unique and travels between server and client
     createSendToken(newUser, 201, res);
   } catch (err) {
+    console.log(err);
+
     next(err);
   }
 };
@@ -185,12 +190,14 @@ const forgetPassword = async (req, res, next) => {
     await user.save({ validateBeforeSave: false });
     // Send it to the user mail
     const resetURL = `${req.protocol}://${req.get('host')}/api/v1/users/resetPassword/${token}`;
-    const message = `Forgot your password, Submit A PATCH Request to this URL ${resetURL}.\n if you don't make this request, please ignore this message`;
-    await sendEmail({
-      email: user.email,
-      subject: `Reset You Password, Valid For 10 min`,
-      message,
-    });
+    await new Email(user, resetURL).sendPasswordReset();
+
+    // const message = `Forgot your password, Submit A PATCH Request to this URL ${resetURL}.\n if you don't make this request, please ignore this message`;
+    // await sendEmail({
+    //   email: user.email,
+    //   subject: `Reset You Password, Valid For 10 min`,
+    //   message,
+    // });
     res.status(200).json({
       status: 'Success',
       message: 'The Token has sent to the user mail!',
