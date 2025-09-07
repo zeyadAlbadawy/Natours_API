@@ -1,6 +1,8 @@
 const AppError = require('../utils/appError.js');
 const Tour = require('../models/tourModel.js');
 const User = require('../models/userModel.js');
+const Booking = require('../models/bookingModel.js');
+
 const getOverview = async (req, res, next) => {
   const tours = await Tour.find();
   res.status(200).render('overview', { title: 'All Tours', tours });
@@ -58,7 +60,22 @@ const updateUserData = async (req, res, next) => {
     next(err);
   }
 };
+
+const getMyTours = async (req, res, next) => {
+  try {
+    const booking = await Booking.find({ user: req.user.id });
+    const tourID = booking.map((elm) => elm.tour);
+    const tours = await Tour.find({ _id: { $in: tourID } });
+    res.status(200).render('overview', {
+      title: 'My Tours',
+      tours,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
 module.exports = {
+  getMyTours,
   getOverview,
   getTour,
   getLoginForm,

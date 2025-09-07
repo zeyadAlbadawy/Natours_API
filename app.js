@@ -16,6 +16,7 @@ const tourRouter = require('./routes/tourRoutes.js');
 const userRouter = require(`./routes/userRoutes.js`);
 const reviewRouter = require('./routes/reviewRouter.js');
 const viewsRouter = require('./routes/viewsRouter.js');
+const bookingRouter = require('./routes/bookingRouter.js');
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -72,6 +73,7 @@ app.use('/', viewsRouter);
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
+app.use('/api/v1/bookings', bookingRouter);
 // If the router didn't catched from the above routers then it will enter here!
 app.all('*', (req, res, next) => {
   next(new AppError(`Can not find ${req.originalUrl}`, 404));

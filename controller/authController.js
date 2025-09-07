@@ -130,6 +130,7 @@ const protect = async (req, res, next) => {
     }
     req.user = freshUser;
     res.locals.user = freshUser;
+    console.log(freshUser);
 
     next();
   } catch (err) {
@@ -192,12 +193,6 @@ const forgetPassword = async (req, res, next) => {
     const resetURL = `${req.protocol}://${req.get('host')}/api/v1/users/resetPassword/${token}`;
     await new Email(user, resetURL).sendPasswordReset();
 
-    // const message = `Forgot your password, Submit A PATCH Request to this URL ${resetURL}.\n if you don't make this request, please ignore this message`;
-    // await sendEmail({
-    //   email: user.email,
-    //   subject: `Reset You Password, Valid For 10 min`,
-    //   message,
-    // });
     res.status(200).json({
       status: 'Success',
       message: 'The Token has sent to the user mail!',

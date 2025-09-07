@@ -3,11 +3,14 @@ import 'regenerator-runtime/runtime';
 import { loginUser, logout } from './login';
 import { displayMap } from './leaflet';
 import { updateData, updatePassword } from './updateSettings';
+import { bookTour } from './stripe';
 
 const mapSelect = document.getElementById('map');
 const logOutBtn = document.querySelector('.nav__el--logout');
 const updateDataForm = document.querySelector('.form-user-data');
 const passwordForm = document.querySelector('.form-user-password');
+const bookBtn = document.querySelector('#book-tour');
+
 if (logOutBtn) {
   logOutBtn.addEventListener('click', (e) => {
     e.preventDefault();
@@ -52,5 +55,13 @@ if (passwordForm) {
     document.getElementById('password').value = '';
     document.getElementById('password-current').value = '';
     document.getElementById('password-confirm').value = '';
+  });
+}
+
+if (bookBtn) {
+  bookBtn.addEventListener('click', async (e) => {
+    e.target.textContent = 'Processing...';
+    const { tourId } = e.target.dataset; // dataset got the id from rendering the tour page!
+    await bookTour(tourId);
   });
 }
