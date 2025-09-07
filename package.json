@@ -8,7 +8,8 @@
     "start:dev": "nodemon sever.js",
     "start:prod": "cross-env NODE_ENV=production nodemon server.js ",
     "debug": "ndb server.js",
-    "watch:js": "parcel watch ./public/js/index.js --out-dir ./public/js --out-file bundle.js"
+    "watch:js": "parcel watch ./public/js/index.js --out-dir ./public/js --out-file bundle.js",
+    "build:js": "parcel build ./public/js/index.js --out-dir ./public/js --out-file bundle.js"
   },
   "author": "",
   "license": "ISC",
@@ -16,6 +17,7 @@
     "@stripe/stripe-js": "^7.9.0",
     "axios": "^1.11.0",
     "bcryptjs": "^3.0.2",
+    "compression": "^1.8.1",
     "cookie-parser": "^1.4.7",
     "core-js": "^3.44.0",
     "dotenv": "^17.0.1",

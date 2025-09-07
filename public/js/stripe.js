@@ -7,9 +7,7 @@ const stripePromise = loadStripe(
 
 export const bookTour = async (tourId) => {
   // 1) Get Checkout session from backend
-  const session = await axios.get(
-    `http://127.0.0.1:3000/api/v1/bookings/checkout-session/${tourId}`,
-  );
+  const session = await axios.get(`/bookings/checkout-session/${tourId}`);
 
   // 2) Use Stripe.js in browser
   const stripe = await stripePromise;

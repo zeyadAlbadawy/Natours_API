@@ -4,10 +4,7 @@ import { showAlert } from './alerts';
 // update data function
 export const updateData = async (data) => {
   try {
-    const res = await axios.patch(
-      'http://127.0.0.1:3000/api/v1/users/updateMe',
-      data,
-    );
+    const res = await axios.patch('/api/v1/users/updateMe', data);
     if (res.data.status === 'Success')
       showAlert('success', 'Updated Data Successful');
   } catch (err) {
@@ -21,14 +18,11 @@ export const updatePassword = async (
   passwordNewConfirm,
 ) => {
   try {
-    const res = await axios.patch(
-      `http://127.0.0.1:3000/api/v1/users/updateMyPassword`,
-      {
-        password,
-        passwordNew,
-        passwordNewConfirm,
-      },
-    );
+    const res = await axios.patch(`/api/v1/users/updateMyPassword`, {
+      password,
+      passwordNew,
+      passwordNewConfirm,
+    });
     if (res.data.status === 'Success')
       showAlert('success', 'Updated PASSWORD Successful');
   } catch (err) {

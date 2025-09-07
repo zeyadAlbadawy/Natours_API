@@ -53,8 +53,6 @@ const signup = async (req, res, next) => {
     // The first params of jwt.assign is the property that can be unique and travels between server and client
     createSendToken(newUser, 201, res);
   } catch (err) {
-    console.log(err);
-
     next(err);
   }
 };
@@ -130,8 +128,6 @@ const protect = async (req, res, next) => {
     }
     req.user = freshUser;
     res.locals.user = freshUser;
-    console.log(freshUser);
-
     next();
   } catch (err) {
     next(err);

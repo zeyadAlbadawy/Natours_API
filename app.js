@@ -3,6 +3,7 @@ const morgan = require('morgan');
 var cookieParser = require('cookie-parser');
 const helmet = require('helmet');
 const hpp = require('hpp');
+const compression = require('compression');
 const path = require('path');
 const mongoSanitize = require('express-mongo-sanitize');
 // const { xss } = require('express-xss-sanitizer');
@@ -50,7 +51,7 @@ const limiter = rateLimit({
 });
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
-
+app.use(compression());
 // Middle-ware
 app.use('/api', limiter);
 app.use(express.static('public'));
