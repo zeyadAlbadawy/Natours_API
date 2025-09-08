@@ -16,7 +16,7 @@ module.exports = class Email {
       return nodemailer.createTransport({
         service: 'SendGrid',
         auth: {
-          user: process.env.SEND_GRID_USERNAME,
+          user: 'apikey',
           pass: process.env.SEND_GRID_PASSWORD,
         },
       });
@@ -28,7 +28,7 @@ module.exports = class Email {
       host: process.env.EMAIL_HOST,
       port: process.env.EMAIL_PORT,
       auth: {
-        user: 'apikey',
+        user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASSWORD,
       },
     });
@@ -60,12 +60,8 @@ module.exports = class Email {
   }
 
   async sendWelcome() {
-    try {
-      // Bug Template to welcome user
-      await this.send('Welcome', 'Welcome to Natours Family!');
-    } catch (err) {
-      console.log(err);
-    }
+    // Bug Template to welcome user
+    await this.send('Welcome', 'Welcome to Natours Family!');
   }
 
   async sendPasswordReset() {
