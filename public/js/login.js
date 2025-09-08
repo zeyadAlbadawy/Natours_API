@@ -18,12 +18,32 @@ export const loginUser = async (email, password) => {
       email,
       password,
     });
-    if (res.data.status === 'success')
+    console.log(res.data.status);
+    if (res.data.status === 'Success')
       showAlert('success', 'Logged in Successful');
     window.setTimeout(() => {
       location.assign('/');
     }, 1500);
   } catch (err) {
+    showAlert('error', err);
+  }
+};
+
+export const signup = async (name, email, password, passwordConfirm) => {
+  try {
+    const res = await axios.post('/api/v1/users/signup', {
+      name,
+      email,
+      password,
+      passwordConfirm,
+    });
+    if (res.data.status === 'Success')
+      showAlert('success', 'User Created in Successful');
+    window.setTimeout(() => {
+      location.assign('/');
+    }, 1500);
+  } catch (err) {
+    console.log(err);
     showAlert('error', err);
   }
 };

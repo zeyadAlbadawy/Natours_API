@@ -1,6 +1,6 @@
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
-import { loginUser, logout } from './login';
+import { loginUser, logout, signup } from './login';
 import { displayMap } from './leaflet';
 import { updateData, updatePassword } from './updateSettings';
 import { bookTour } from './stripe';
@@ -29,6 +29,20 @@ if (form) {
     const email = document.getElementById('email')?.value;
     const password = document.getElementById('password')?.value;
     loginUser(email, password);
+  });
+}
+
+// Signup Users
+
+const formSignup = document.querySelector('.form--signup');
+if (formSignup) {
+  formSignup.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const email = document.getElementById('email')?.value;
+    const password = document.getElementById('password')?.value;
+    const nameInpt = document.getElementById('nameInpt')?.value;
+    const passwordConfirm = document.getElementById('passwordConfirm')?.value;
+    signup(nameInpt, email, password, passwordConfirm);
   });
 }
 

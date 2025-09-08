@@ -31,6 +31,14 @@ const getLoginForm = async (req, res, next) => {
   }
 };
 
+const getSignupForm = async (req, res, next) => {
+  try {
+    res.status(200).render('signup', { title: 'Create new account' });
+  } catch (err) {
+    next(err);
+  }
+};
+
 const getAccount = async (req, res, next) => {
   try {
     res.status(200).render('account', { title: 'Your account' });
@@ -81,4 +89,5 @@ module.exports = {
   getLoginForm,
   getAccount,
   updateUserData,
+  getSignupForm,
 };
