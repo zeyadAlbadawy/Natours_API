@@ -35,7 +35,7 @@ module.exports = class Email {
     );
 
     if (process.env.NODE_ENV === 'production') {
-      // ✅ Use SendGrid in production
+      //  Use SendGrid in production
       sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
       const msg = {
@@ -49,11 +49,11 @@ module.exports = class Email {
       try {
         await sgMail.send(msg);
       } catch (err) {
-        console.error('❌ SendGrid Error:', err.response?.body || err.message);
+        console.error(' SendGrid Error:', err.response?.body || err.message);
         throw err;
       }
     } else {
-      // ✅ Use Mailtrap in development
+      //  Use Mailtrap in development
       const transport = this.createDevTransport();
       await transport.sendMail({
         from: this.from,
@@ -66,7 +66,7 @@ module.exports = class Email {
   }
 
   async sendWelcome() {
-    await this.send('Welcome', 'Welcome to Natours Family!');
+    await this.send('welcome', 'Welcome to Natours Family!');
   }
 
   async sendPasswordReset() {
