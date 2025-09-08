@@ -35,7 +35,7 @@ module.exports = class Email {
     );
 
     if (process.env.NODE_ENV === 'production') {
-      //  Use SendGrid in production
+      // ✅ Use SendGrid in production with your env vars
       sgMail.setApiKey(process.env.SEND_GRID_PASSWORD);
 
       const msg = {
@@ -49,11 +49,11 @@ module.exports = class Email {
       try {
         await sgMail.send(msg);
       } catch (err) {
-        console.error(' SendGrid Error:', err.response?.body || err.message);
+        console.error('❌ SendGrid Error:', err.response?.body || err.message);
         throw err;
       }
     } else {
-      //  Use Mailtrap in development
+      // ✅ Use Mailtrap in development
       const transport = this.createDevTransport();
       await transport.sendMail({
         from: this.from,
