@@ -28,7 +28,7 @@ module.exports = class Email {
       host: process.env.EMAIL_HOST,
       port: process.env.EMAIL_PORT,
       auth: {
-        user: process.env.EMAIL_USER,
+        user: 'apikey',
         pass: process.env.EMAIL_PASSWORD,
       },
     });
@@ -60,8 +60,12 @@ module.exports = class Email {
   }
 
   async sendWelcome() {
-    // Bug Template to welcome user
-    await this.send('Welcome', 'Welcome to Natours Family!');
+    try {
+      // Bug Template to welcome user
+      await this.send('Welcome', 'Welcome to Natours Family!');
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   async sendPasswordReset() {
