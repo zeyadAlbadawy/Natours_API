@@ -36,7 +36,7 @@ module.exports = class Email {
 
     if (process.env.NODE_ENV === 'production') {
       //  Use SendGrid in production
-      sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+      sgMail.setApiKey(process.env.SEND_GRID_PASSWORD);
 
       const msg = {
         to: this.to,
